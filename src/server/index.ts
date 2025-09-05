@@ -46,10 +46,13 @@ router.post("/internal/on-app-install", async (_req, res): Promise<void> => {
 
 router.post("/internal/menu/post-create", async (_req, res): Promise<void> => {
   try {
-    const post = await createPost();
+    const dailyQuestion = getCurrentDailyQuestionID();
+    if (!dailyQuestion) res.status(404).json({ status: "error", message: 'question not found' });
+
+    const post = await createDailyPost(dailyQuestion);
 
     res.json({
-      navigateTo: `https://reddit.com/r/${context.subredditName}/comments/${post.id}`,
+      navigateTo: `https://reddit.com/r/${context.subredditName}/comments/${post?.id}`,
     });
   } catch (error) {
     console.error(`Error creating post: ${error}`);
@@ -76,6 +79,7 @@ router.get<
 
   const dailyQuestionID = Number(req.params.id);
   const dailyQuestion = getQuestionById(dailyQuestionID);
+
   if (!dailyQuestion) return res.status(404).json({ status: "error", message: 'Question not found' });
 
   // Will be empty for those who are not logged in
@@ -87,9 +91,11 @@ router.get<
   // If voted—return results
   var totals: Record<string, string> = {};
   var totalCount = 0;
+  var answerOption = null;
 
   // Get results
   if (alreadyVoted) {
+    answerOption = await redis.get(votedUserKey(dailyQuestionID, currentUserID));
     const results = await getResults(dailyQuestionID, dailyQuestion.options.length);
     totals = results.totals;
     totalCount = results.totalCount;
@@ -97,10 +103,10 @@ router.get<
 
   const response: DailyQuestionResponse = {
     type: "dailyQuestion",
-    dailyQuestion,
-    alreadyVoted,
-    totals,
-    totalCount
+    dailyQuestion: dailyQuestion,
+    totals: totals,
+    totalCount: totalCount,
+    userVote: Number(answerOption),
   };
 
   res.status(200).json(response);
@@ -127,13 +133,11 @@ router.post<
 
   if (!userId) return res.status(401).json({ status: "error", message: 'Login required' });
 
-  // Checking whether the user has voted
-  // Just write "1". The value is not important, what matters is the fact that the key exist
   // NX - Create the key if it does not exist yet
   // Transaction not needed
   // If key already exists - ok = null
   // If key does not exist - ok = true
-  const ok = await redis.set(votedUserKey(dailyQuestionID, userId), "1", { nx: true });
+  const ok = await redis.set(votedUserKey(dailyQuestionID, userId), String(answerOption), { nx: true });
   if (ok) {
     // New voice - increase the counter
     await redis.hIncrBy(votesKey(dailyQuestionID), String(answerOption), 1);
@@ -149,8 +153,9 @@ router.post<
   const response: VoteResponse = {
     type: "vote",
     alreadyVoted: !ok,
-    totals,
-    totalCount,
+    totals: totals,
+    totalCount: totalCount,
+    userVote: answerOption,
   };
 
   return res.status(200).json(response);
@@ -161,26 +166,12 @@ router.post<
 //The question of the day is selected based on the current date
 router.post('/internal/cron/create-daily-post', async (_req, res) => {
   try {
-    const { subredditName } = context;
-
     const dailyQuestion = getCurrentDailyQuestionID();
     if (!dailyQuestion) return res.status(404).json({ status: "error", message: 'question not found' });
 
-    const post = await reddit.submitCustomPost({
-      subredditName: subredditName,
-      title: `Daily Quest #${dailyQuestion.id} — ${dailyQuestion.date}`,
-      splash: {
-        appDisplayName: 'Daily Ethics Poll',
-        buttonLabel: 'Launch App',
-        heading: 'Answer question',
-        description: dailyQuestion.question,
-        backgroundUri: 'background.png',
-        appIconUri: 'app-icon.png'
-      },
-      postData: { questionID: dailyQuestion.id }
-    });
+    const post = await createDailyPost(dailyQuestion);
 
-    res.status(200).json({ status: 'ok', postId: post.id, dailyQuestion: dailyQuestion.id });
+    res.status(200).json({ status: 'ok', postId: post?.id, dailyQuestion: dailyQuestion.id });
   } catch (err) {
     console.error('Failed to create daily post:', err);
     res.status(500).json({ status: "error", message: 'failed to create post' });
@@ -192,6 +183,33 @@ router.post('/internal/cron/create-daily-post', async (_req, res) => {
 ///////// Methods
 ///
 ///
+
+// Creating a daily post for reuse
+async function createDailyPost(dailyQuestion: DailyQuestion | null) {
+  const { subredditName } = context;
+
+  if (!dailyQuestion) return;
+
+  const shortDesc = dailyQuestion.question.length > 20
+    ? dailyQuestion.question.slice(0, 20) + "..."
+    : dailyQuestion.question;
+
+  const post = await reddit.submitCustomPost({
+    subredditName: subredditName,
+    title: `Today’s Dilemma — ${dailyQuestion.date}`,
+    splash: {
+      appDisplayName: 'Daily Quest',
+      buttonLabel: 'Make Your Choice',
+      heading: 'What Would You Do?',
+      description: shortDesc,
+      backgroundUri: 'background.png',
+      appIconUri: 'app-icon.png'
+    },
+    postData: { questionID: dailyQuestion.id }
+  });
+
+  return post;
+}
 
 // Search for a question by today's date
 function getCurrentDailyQuestionID(): DailyQuestion | null {

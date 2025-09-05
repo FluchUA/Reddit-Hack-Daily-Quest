@@ -5,12 +5,13 @@ export type VoteResponse = {
   alreadyVoted: boolean;
   totals: Record<string, string>;
   totalCount: number;
+  userVote: number;
 };
 
 export type DailyQuestionResponse = {
   type: "dailyQuestion";
   dailyQuestion: DailyQuestion;
-  alreadyVoted: boolean;
   totals: Record<string, string>;
   totalCount: number;
+  userVote: number | null;
 };

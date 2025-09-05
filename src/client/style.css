@@ -53,6 +53,7 @@ body {
 }
 
 h1 {
+  user-select: none;
   color: rgb(224, 241, 248);
   margin-bottom: 25px;
   text-shadow: 0 0 20px rgba(0, 179, 255, 0.6),
@@ -60,6 +61,7 @@ h1 {
 }
 
 #daily-question {
+  user-select: none;
   margin-bottom: 20px;
   font-size: 18px;
   color: #ffffff;
@@ -68,6 +70,7 @@ h1 {
 }
 
 #auto-comment {
+  user-select: none;
   font-size: 18px;
   color: #c8f7ff;
   text-shadow: 0 0 20px rgba(123, 255, 255, 0.5),
@@ -75,6 +78,7 @@ h1 {
 }
 
 .button {
+  user-select: none;
   width: 220px;
   height: 60px;
   padding-left: 18px;
@@ -148,8 +152,9 @@ h1 {
 }
 
 .loading {
-  content: "";
-  display: inline-block;
+  position: fixed;
+  top: 50%;
+  left: 50%;
   width: 62px;
   height: 62px;
   border: 6px solid #82F48E;
@@ -164,8 +169,12 @@ h1 {
 }
 
 @keyframes spin {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
   to {
-    transform: rotate(360deg);
+    transform: translate(-50%, -50%) rotate(360deg);
   }
 }
 
@@ -177,6 +186,7 @@ h1 {
 }
 
 .label {
+  user-select: none;
   width: 50px;
   display: flex;
   justify-content: center;
@@ -184,6 +194,7 @@ h1 {
 }
 
 .percentage {
+  user-select: none;
   width: 50px;
   text-align: center;
   font-size: 26px;

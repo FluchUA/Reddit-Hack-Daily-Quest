@@ -24,10 +24,10 @@ const optionWrappers = [
 ];
 
 // Button objects
-const dailyOption1 = document.getElementById("daily-option1") as HTMLDivElement;
-const dailyOption2 = document.getElementById("daily-option2") as HTMLDivElement;
-const dailyOption3 = document.getElementById("daily-option3") as HTMLDivElement;
-const dailyOption4 = document.getElementById("daily-option4") as HTMLDivElement;
+const dailyOption1 = document.getElementById("daily-option1") as HTMLButtonElement;
+const dailyOption2 = document.getElementById("daily-option2") as HTMLButtonElement;
+const dailyOption3 = document.getElementById("daily-option3") as HTMLButtonElement;
+const dailyOption4 = document.getElementById("daily-option4") as HTMLButtonElement;
 const dailyOptions = [
   dailyOption1,
   dailyOption2,
@@ -63,17 +63,17 @@ const postDataQuestionID = context.postData?.questionID;
 const questionID = postDataQuestionID ? Number(postDataQuestionID) : null;
 
 if (!questionID) {
-  dailyQuestion.textContent = "No active question found.";
+  dailyQuestion.textContent = "No active question found";
   hideLoader();
   showContent();
 } else {
   loadQuestion(questionID);
 }
 
-async function loadQuestion(id: number) {
+async function loadQuestion(questioID: number) {
   showLoader();
   try {
-    const response = await fetch(`/api/daily-question/${id}`);
+    const response = await fetch(`/api/daily-question/${questioID}`);
     if (!response.ok) throw new Error("Failed to load question");
 
     const data = (await response.json()) as DailyQuestionResponse;
@@ -87,11 +87,12 @@ async function loadQuestion(id: number) {
     /// Show daily question
     dailyQuestion.textContent = data.dailyQuestion.question;
 
-    if (data.alreadyVoted) {
-      showResults(data.totals);
-    } else {
-      showOptions(id, data.dailyQuestion.options);
+    showOptions(questioID, data.dailyQuestion.options);
+
+    if (data.userVote != null) {
+      showResults(data.userVote, data.totals);
     }
+
   } catch (err) {
     dailyQuestion.textContent = "Error loading question";
     console.error(err);
@@ -101,10 +102,10 @@ async function loadQuestion(id: number) {
   }
 }
 
-async function vote(id: number, option: number) {
+async function vote(questioID: number, option: number) {
   showLoader();
   try {
-    const response = await fetch(`/api/daily-question/${id}/vote`, {
+    const response = await fetch(`/api/daily-question/${questioID}/vote`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ answerOption: option }),
@@ -113,7 +114,7 @@ async function vote(id: number, option: number) {
 
     const data = (await response.json()) as VoteResponse;
 
-    showResults(data.totals);
+    showResults(data.userVote, data.totals);
   } catch (err) {
     console.error("Vote failed", err);
   } finally {
@@ -121,7 +122,7 @@ async function vote(id: number, option: number) {
   }
 }
 
-function showOptions(id: number, options: string[]) {
+function showOptions(questioID: number, options: string[]) {
   options.forEach((opt, idx) => {
     const optionWrapper = optionWrappers[idx];
     const currentButton = dailyOptions[idx];
@@ -131,13 +132,21 @@ function showOptions(id: number, options: string[]) {
 
       currentButton.textContent = opt;
       currentButton.onclick = async () => {
-        await vote(id, idx);
+        await vote(questioID, idx);
       };
     }
   });
 }
 
-function showResults(totals: Record<string, number | string>) {
+function disableButtons() {
+  dailyOptions.forEach((button) => {
+    button.disabled = true;
+  });
+}
+
+function showResults(userVote: number, totals: Record<string, number | string>) {
+  disableButtons();
+
   // Convert totals to an array { idx, count } and calculate the total total
   const entries = Object.entries(totals).map(([idx, val]) => ({
     idx: Number(idx),
@@ -150,6 +159,9 @@ function showResults(totals: Record<string, number | string>) {
     ...e,
     percent: totalVotes > 0 ? (e.count / totalVotes) * 100 : 0
   }));
+
+  /// Show user vote
+  choiceLabels[userVote]?.classList.remove('invisible');
 
   // Render each line
   entriesWithPercent.forEach(({ idx, percent }) => {

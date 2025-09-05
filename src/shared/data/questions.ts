@@ -45,7 +45,7 @@ export const dailyQuestions: DailyQuestion[] = [
     ],
   },
   {
-    "id": 5,
+    "id": -1,
     "date": "2025-09-05",
     "question": "You are late for work but see a stranger who needs help. What do you do?",
     "options": [
@@ -60,6 +60,15 @@ export const dailyQuestions: DailyQuestion[] = [
     "options": [
       "Keep the money",
       "Try to return it"
+    ],
+  },
+    {
+    "id": 7,
+    "date": "2025-09-07",
+    "question": "You are offered your dream job, but it is in another country far from your family. Do you take it?",
+    "options": [
+      "Accept the job",
+      "Stay near family"
     ],
   },
 ];
