@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <link rel="stylesheet" type="text/css" href="style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+    content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width, height=device-height, user-scalable=0" />
+  <title>Devvit Daily-Quest</title>
+</head>
+
+<body class="app">
+  <div class="loading" id="loader"></div>
+  <div class="container hidden-element" id="content-container">
+    <h1 id="title"></h1>
+    <p id="daily-question"></p>
+
+    <div class="buttons-container hidden-element">
+      <div class="option-wrapper" id="option-wrapper1">
+        <span class="label color-blue invisible" id="choice-label1">Your<br>choice</span>
+        <button id="daily-option1" class="button btn1"></button>
+        <span class="percentage color-blue invisible" id="percentage1"></span>
+      </div>
+
+      <div class="option-wrapper hidden-element" id="option-wrapper2">
+        <span class="label color-purple invisible" id="choice-label2">Your<br>choice</span>
+        <button id="daily-option2" class="button btn2"></button>
+        <span class="percentage color-purple invisible" id="percentage2"></span>
+      </div>
+
+      <div class="option-wrapper hidden-element" id="option-wrapper3">
+        <span class="label color-green invisible" id="choice-label3">Your<br>choice</span>
+        <button id="daily-option3" class="button btn3"></button>
+        <span class="percentage color-green invisible" id="percentage3"></span>
+      </div>
+
+      <div class="option-wrapper hidden-element" id="option-wrapper4">
+        <span class="label color-orange invisible" id="choice-label4">Your<br>choice</span>
+        <button id="daily-option4" class="button btn4"></button>
+        <span class="percentage color-orange invisible" id="percentage4"></span>
+      </div>
+    </div>
+
+
+    <p id="auto-comment"></p>
+  </div>
+
+  <script type="module" src="main.ts" defer></script>
+</body>
+
+</html>
