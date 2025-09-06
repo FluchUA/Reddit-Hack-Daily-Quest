@@ -106,7 +106,7 @@ router.get<
     dailyQuestion: dailyQuestion,
     totals: totals,
     totalCount: totalCount,
-    userVote: Number(answerOption),
+    userVote: answerOption != null ? Number(answerOption) : null,
   };
 
   res.status(200).json(response);
@@ -202,7 +202,7 @@ async function createDailyPost(dailyQuestion: DailyQuestion | null) {
       buttonLabel: 'Make Your Choice',
       heading: 'What Would You Do?',
       description: shortDesc,
-      backgroundUri: 'background.png',
+      backgroundUri: 'post-background.png',
       appIconUri: 'app-icon.png'
     },
     postData: { questionID: dailyQuestion.id }
