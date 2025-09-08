@@ -1,24 +1,10 @@
-## Devvit Hello World Starter
+## Overview — Daily-Quest
 
-A starter to build web applications on Reddit's developer platform
+Daily-Quest is a social game where every day you face a new dilemma.
+Each day, players are presented with a thought-provoking or funny scenario and must choose between multiple options. After voting, you instantly see how your choice compares to the community.
 
-- [Devvit](https://developers.reddit.com/): A way to build and deploy immersive games on Reddit
-- [Express](https://expressjs.com/): For backend logic
-- [Typescript](https://www.typescriptlang.org/): For type safety
+The app is designed to spark reflection, humor, and debate. Sometimes the questions are lighthearted, sometimes they’re controversial — but they’re always engaging.
 
-## Getting Started
+## Why Daily-Quest?
 
-> Make sure you have Node 22 downloaded on your machine before running!
-
-1. Run `npm create devvit@latest --template=hello-world`
-2. Go through the installation wizard. You will need to create a Reddit account and connect it to Reddit developers
-3. Copy the command on the success page into your terminal
-
-## Commands
-
-- `npm run dev`: Starts a development server where you can develop your application live on Reddit.
-- `npm run build`: Builds your client and server projects
-- `npm run deploy`: Uploads a new version of your app
-- `npm run launch`: Publishes your app for review
-- `npm run login`: Logs your CLI into Reddit
-- `npm run check`: Type checks, lints, and prettifies your app
+It’s quick, fun, and makes you think. In less than a minute, you can make your choice, compare with others, and even spark deeper conversations. Daily-Quest turns simple questions into social experiments — blending entertainment with insight.
