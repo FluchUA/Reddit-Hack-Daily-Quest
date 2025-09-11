@@ -78,10 +78,10 @@ async function loadQuestion(questioID: number) {
 
     const data = (await response.json()) as DailyQuestionResponse;
 
-    /// Show current day
-    const today = new Date();
+    /// Show question day
+    const eventDate = new Date(data.dailyQuestion.date);
     const options = { weekday: 'long', month: 'long', day: 'numeric' } as const;
-    const formattedDate = today.toLocaleDateString('en-US', options);
+    const formattedDate = eventDate.toLocaleDateString('en-US', options);
     title.textContent = formattedDate;
 
     /// Show daily question
