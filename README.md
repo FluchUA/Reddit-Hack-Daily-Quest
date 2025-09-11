@@ -12,7 +12,7 @@ It’s quick, fun, and makes you think. In less than a minute, you can make your
 Post - Splash screen
 <img width="1512" height="1050" alt="Image" src="https://github.com/user-attachments/assets/0f47430b-6da4-4561-979e-32291317a92d" />
 Some question with results
-<img width="1512" height="1050" alt="Image" src="https://github.com/user-attachments/assets/a1cb390d-258d-45f2-8807-1d4aaffed6d0" />
+<img width="1512" height="1050" alt="Image" src="https://github.com/user-attachments/assets/f45f3ecc-4c23-4bde-b74f-839b3a57a6c3" />
 Some question with results - mobile
 <img width="1512" height="1050" alt="Image" src="https://github.com/user-attachments/assets/8bbe58d2-9c87-4681-8d22-4cbc022c5297" />
 Some question with results - desktop
@@ -20,4 +20,4 @@ Some question with results - desktop
 Some question with results - fullscreen
 <img width="1512" height="1050" alt="Image" src="https://github.com/user-attachments/assets/653e432c-1e85-4d80-ba9a-7a53bfe54b08" />
 Some question without results - fullscreen
-<img width="1512" height="1050" alt="Image" src="https://github.com/user-attachments/assets/048d9705-69ce-4fe7-8ffd-55ea8820e983" />
+<img width="1512" height="1050" alt="Image" src="https://github.com/user-attachments/assets/6cd549c3-e310-4991-a2c7-7a6052644504" />
