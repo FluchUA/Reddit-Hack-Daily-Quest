@@ -17,5 +17,4 @@ Daily-Quest is a social game that delivers a fresh dilemma every day. Players ar
 * Encourages reflection, debate, and social interaction.
 
 ## Why It Matters
-
 Daily-Quest is built to be quick and engaging: less than a minute a day can give you insight into how others think, spark interesting conversations, and just have a little fun. Simple questions become social experiments with meaning.
