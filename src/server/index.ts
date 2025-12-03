@@ -46,11 +46,18 @@ router.post("/internal/on-app-install", async (_req, res): Promise<void> => {
 
 router.post("/internal/menu/post-create", async (_req, res): Promise<void> => {
   try {
+    console.log('Start creating a daily post');
     const dailyQuestion = getCurrentDailyQuestionID();
-    if (!dailyQuestion) res.status(404).json({ status: "error", message: 'question not found' });
 
+    if (!dailyQuestion) {
+      console.log('Error creating post - daily question not found');
+      res.status(404).json({ status: "error", message: 'question not found' });
+    }
+
+    console.log('Question ready, attempting to create a post');
     const post = await createDailyPost(dailyQuestion);
 
+    console.log('Daytime post created successfully');
     res.json({
       navigateTo: `https://reddit.com/r/${context.subredditName}/comments/${post?.id}`,
     });
@@ -166,11 +173,18 @@ router.post<
 //The question of the day is selected based on the current date
 router.post('/internal/cron/create-daily-post', async (_req, res) => {
   try {
+    console.log('Start creating a daily post');
     const dailyQuestion = getCurrentDailyQuestionID();
-    if (!dailyQuestion) return res.status(404).json({ status: "error", message: 'question not found' });
 
+    if (!dailyQuestion) {
+      console.log('Error creating post - daily question not found');
+      return res.status(404).json({ status: "error", message: 'question not found' });
+    }
+
+    console.log('Question ready, attempting to create a post');
     const post = await createDailyPost(dailyQuestion);
 
+    console.log('Daytime post created successfully');
     res.status(200).json({ status: 'ok', postId: post?.id, dailyQuestion: dailyQuestion.id });
   } catch (err) {
     console.error('Failed to create daily post:', err);
