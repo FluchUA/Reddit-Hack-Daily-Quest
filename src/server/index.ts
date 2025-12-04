@@ -172,23 +172,32 @@ router.post<
 // Automatic post creation
 //The question of the day is selected based on the current date
 router.post('/internal/cron/create-daily-post', async (_req, res) => {
+  console.log('Start creating a daily post');
+  const dailyQuestion = getCurrentDailyQuestionID();
+    
   try {
-    console.log('Start creating a daily post');
-    const dailyQuestion = getCurrentDailyQuestionID();
-
     if (!dailyQuestion) {
       console.log('Error creating post - daily question not found');
       return res.status(404).json({ status: "error", message: 'question not found' });
     }
 
-    console.log('Question ready, attempting to create a post');
+    console.log(`Question ready, attempting to create a post. Date: ${dailyQuestion.date}`);
     const post = await createDailyPost(dailyQuestion);
 
-    console.log('Daytime post created successfully');
     res.status(200).json({ status: 'ok', postId: post?.id, dailyQuestion: dailyQuestion.id });
   } catch (err) {
     console.error('Failed to create daily post:', err);
-    res.status(500).json({ status: "error", message: 'failed to create post' });
+    await new Promise(r => setTimeout(r, 5000));
+
+    try {
+      console.log(`Retrying to create a daily post. Date: ${dailyQuestion?.date}`);
+      const post2 = await createDailyPost(dailyQuestion);
+      
+      res.status(200).json({ status: 'ok', postId: post2?.id, dailyQuestion: dailyQuestion?.id });
+    } catch (err) {
+      console.error('Failed to create daily post:', err);
+      res.status(500).json({ status: "error", message: 'failed to create post' });
+    }
   }
 });
 
