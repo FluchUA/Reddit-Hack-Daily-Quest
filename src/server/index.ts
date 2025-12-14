@@ -12,6 +12,7 @@ import {
 } from "../shared/types/api";
 import { createPost } from "./core/post";
 import { DailyQuestion, dailyQuestions } from '../shared/data/questions';
+import { scheduler } from '@devvit/web/server';
 
 const app = express();
 
@@ -170,7 +171,7 @@ router.post<
 
 
 // Automatic post creation
-//The question of the day is selected based on the current date
+// The question of the day is selected based on the current date
 router.post('/internal/cron/create-daily-post', async (_req, res) => {
   console.log('Start creating a daily post');
   const dailyQuestion = getCurrentDailyQuestionID();
@@ -186,18 +187,36 @@ router.post('/internal/cron/create-daily-post', async (_req, res) => {
 
     res.status(200).json({ status: 'ok', postId: post?.id, dailyQuestion: dailyQuestion.id });
   } catch (err) {
-    console.error('Failed to create daily post:', err);
-    await new Promise(r => setTimeout(r, 5000));
+    console.log(`Failed to create daily post with ID: ${dailyQuestion?.id}. Error: ${err}`);
 
-    try {
-      console.log(`Retrying to create a daily post. Date: ${dailyQuestion?.date}`);
-      const post2 = await createDailyPost(dailyQuestion);
-      
-      res.status(200).json({ status: 'ok', postId: post2?.id, dailyQuestion: dailyQuestion?.id });
-    } catch (err) {
-      console.error('Failed to create daily post:', err);
-      res.status(500).json({ status: "error", message: 'failed to create post' });
+    // Repeat in 5 minutes
+    await scheduler.runJob({
+      name: 'daily-post-retry',
+      runAt: new Date(Date.now() + 5 * 60 * 1000),
+    });
+
+    res.status(500).json({ status: "error", message: 'failed to create post' });
+  }
+});
+
+// Repeat the creation of a post if it could not be created earlier
+router.post('/internal/cron/create-daily-post-retry', async (_req, res) => {
+  console.log('Repeat creation of daily post');
+  const dailyQuestion = getCurrentDailyQuestionID();
+
+  try {
+    if (!dailyQuestion) {
+      console.log('Error recreating post - daily question not found');
+      return res.status(404).json({ status: "error", message: 'question not found' });
     }
+
+    console.log(`Question ready, attempting to recreate a post. Date: ${dailyQuestion.date}`);
+    const post = await createDailyPost(dailyQuestion);
+
+    res.status(200).json({ status: 'ok', postId: post?.id, dailyQuestion: dailyQuestion.id });
+  } catch (err) {
+    console.log(`Failed to recreate daily post with ID: ${dailyQuestion?.id}. Error: ${err}`);
+    res.status(500).json({ status: "error", message: 'failed to create post' });
   }
 });
 
