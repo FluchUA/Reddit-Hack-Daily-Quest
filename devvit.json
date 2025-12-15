@@ -36,7 +36,7 @@
     "tasks": {
       "daily-post": {
         "endpoint": "/internal/cron/create-daily-post",
-        "cron": "4 0 * * *"
+        "cron": "11 0 * * *"
       },
       "daily-post-retry": {
         "endpoint": "/internal/cron/create-daily-post-retry"
